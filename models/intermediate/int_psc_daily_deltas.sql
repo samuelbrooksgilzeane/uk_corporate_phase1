@@ -11,7 +11,7 @@ with dates as (
     select
         snapshot_date,
         lag(snapshot_date) over (order by snapshot_date) as previous_date
-    from {{ source('companies_house', 'psc_bulk_manifest') }}
+    from {{ ref('base_psc_bulk_manifest') }}
     where is_complete = true
 ), dates_to_process as (
     select *

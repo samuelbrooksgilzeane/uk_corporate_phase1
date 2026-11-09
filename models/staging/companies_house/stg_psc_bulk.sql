@@ -3,7 +3,7 @@
 -- Only publish dates whose full set of ZIP parts was committed.
 with complete_dates as (
     select snapshot_date
-    from {{ source('companies_house', 'psc_bulk_manifest') }}
+    from {{ ref('base_psc_bulk_manifest') }}
     where is_complete = true
 ),
 raw as (
@@ -13,7 +13,7 @@ raw as (
             partition by b.snapshot_date, b.psc_uri
             order by b.loaded_at desc, b.part_number desc
         ) as duplicate_rank
-    from {{ source('companies_house', 'psc_bulk_snapshots') }} b
+    from {{ ref('base_psc_bulk_snapshots') }} b
     inner join complete_dates d
         on b.snapshot_date = d.snapshot_date
     where b.psc_uri is not null

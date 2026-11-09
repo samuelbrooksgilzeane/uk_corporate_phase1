@@ -23,6 +23,18 @@ models:
       Most of the stg_ch_ models read from here. It only covers resources that
       have changed since capture started.
 
+  - name: base_psc_bulk_snapshots
+    description: >
+      Raw rows from the PSC bulk snapshot table as loaded, before
+      deduplication. stg_psc_bulk joins it to the manifest so only complete
+      snapshots come through.
+
+  - name: base_psc_bulk_manifest
+    description: >
+      One row per bulk snapshot date, recording how many archive parts were
+      expected and loaded and whether the snapshot is complete. stg_psc_bulk
+      and int_psc_daily_deltas use it to ignore incomplete snapshots.
+
   - name: stg_ch_companies
     description: >
       Current company profiles from the companies stream, with name, status,
