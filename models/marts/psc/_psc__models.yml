@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: dim_psc_history_bulk
+    description: >
+      SCD2 history of PSC records built from int_psc_daily_deltas, with each
+      version valid between the snapshot dates it was seen. The dates are when
+      we observed a change, not when it legally happened. Used by
+      bridge_ch_company_parties and mart_psc_changes_30d.
+    columns:
+      - name: psc_version_id
+        data_tests: [not_null, unique]
+      - name: company_number
+        data_tests: [not_null]
+
+  - name: dim_psc_history_verified
+    description: >
+      PSC history that adds psc stream events on top of a bulk snapshot
+      baseline, so changes are captured as they happen instead of once a day.
+      It's disabled until enable_psc_stream_union is set along with
+      psc_baseline_date and a verified psc_stream_cutover_timepoint (see
+      NATIONAL_PLATFORM.md).
+
+  - name: mart_psc_changes_30d
+    description: >
+      Number of PSC changes per company seen in the bulk snapshots over the last
+      30 days. Each PSC's first version isn't counted, so a PSC that newly
+      appears in the window doesn't count as a change.

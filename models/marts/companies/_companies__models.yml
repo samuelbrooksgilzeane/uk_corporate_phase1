@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: dim_ch_companies
+    description: >
+      One row per company, built from stg_ch_companies and used as the company
+      lookup in the marts. It only covers companies seen on the companies
+      stream since capture started.
+    columns:
+      - name: company_number
+        data_tests: [not_null, unique]
+
+  - name: dim_ch_company_history
+    description: >
+      SCD2 history of company profiles, with a new version each time a
+      company's record changes on the companies stream (name, status,
+      registered office and so on). Deletions are kept as their own version.
+      History only goes back to when stream capture started.
+    columns:
+      - name: company_version_id
+        data_tests: [not_null, unique]
+      - name: company_number
+        data_tests: [not_null]
+      - name: valid_from_timepoint
+        data_tests: [not_null]
+
+  - name: fct_ch_insolvency_cases
+    description: >
+      One row per insolvency case, from splitting out the cases array in
+      stg_ch_insolvency. Feeds the insolvency counts in mart_ch_company_activity.

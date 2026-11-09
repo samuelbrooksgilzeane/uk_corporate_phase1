@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: bridge_ch_company_parties
+    description: >
+      Links companies to their PSCs (from the latest bulk snapshot) and their
+      officers (from the officers stream). Each row is a source record rather
+      than a matched person, so the same person at two companies appears as two
+      unrelated rows. Feeds mart_ch_company_activity.
+
+  - name: mart_ch_company_activity
+    description: >
+      One row per company with counts of active PSCs, active officers, charges,
+      filings and insolvency cases. Apart from PSCs, the counts only cover
+      activity since stream capture started, so a zero doesn't mean none. It's
+      meant for picking which companies to look at, not as a risk score.
+    columns:
+      - name: company_number
+        data_tests: [not_null, unique]

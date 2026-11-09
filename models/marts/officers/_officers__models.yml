@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: dim_ch_officer_appointment_history
+    description: >
+      SCD2 history of officer appointments, with a new version each time an
+      appointment changes on the officers stream, such as a resignation or a
+      change of role. Deletions are kept as their own version, and history only
+      goes back to when stream capture started.
+    columns:
+      - name: appointment_version_id
+        data_tests: [not_null, unique]
+      - name: appointment_uri
+        data_tests: [not_null]
+      - name: valid_from_timepoint
+        data_tests: [not_null]
