@@ -1,0 +1,13 @@
+name: 'uk_corporate_phase1'
+version: '1.0.0'
+config-version: 2
+
+profile: 'uk_corporate_phase1'
+
+model-paths: ['models']
+test-paths: ['tests']
+
+models:
+  uk_corporate_phase1:
+    +materialized: view
+

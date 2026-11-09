@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: companies_house
+    description: "Immutable PSC observations and changes from a scoped Companies House REST polling job."
+    database: "{{ var('bronze_catalog', 'uk_corporate') }}"
+    schema: "{{ var('bronze_schema', 'bronze') }}"
+    tables:
+      - name: psc_events
+        description: "One row per observed PSC baseline, changed record or deletion; poll positions are synthetic."
+        columns:
+          - name: psc_uri
+            data_tests: [not_null]
+          - name: event_timepoint
+            data_tests: [not_null]
+          - name: event_type
+            data_tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['baseline', 'changed', 'deleted']
+      - name: psc_bulk_snapshots
+        description: "Daily full PSC snapshot records, partitioned by snapshot date and source archive part."
+      - name: psc_bulk_manifest
+        description: "Snapshot load completeness; downstream models exclude incomplete dates."
+      - name: ch_stream_events
+        description: "Append-only raw events from the nine public Companies House streaming endpoints."
+      - name: ch_stream_checkpoints
+        description: "Last durably committed offset per source stream."
+

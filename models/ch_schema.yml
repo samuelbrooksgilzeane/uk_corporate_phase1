@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: stg_ch_stream_events
+    description: "Deduplicated append-only Companies House stream event envelopes."
+    columns:
+      - name: event_id
+        data_tests: [not_null, unique]
+      - name: stream_name
+        data_tests: [not_null]
+      - name: event_timepoint
+        data_tests: [not_null]
+
+  - name: stg_psc_bulk
+    description: "PSC records from only complete bulk snapshots, at PSC record/date grain."
+    columns:
+      - name: psc_id
+        data_tests: [not_null]
+      - name: company_number
+        data_tests: [not_null]
+
+  - name: dim_psc_history_bulk
+    description: "SCD2 of observable changes in successive, complete daily PSC bulk snapshots."
+    columns:
+      - name: psc_version_id
+        data_tests: [not_null, unique]
+      - name: company_number
+        data_tests: [not_null]
+
+  - name: int_psc_daily_deltas
+    description: "Incrementally preserved differences between successive complete national PSC snapshots."
+    columns:
+      - name: psc_change_id
+        data_tests: [not_null, unique]
+      - name: snapshot_date
+        data_tests: [not_null]
+
+  - name: dim_ch_companies
+    columns:
+      - name: company_number
+        data_tests: [not_null, unique]
+
+  - name: mart_ch_company_activity
+    columns:
+      - name: company_number
+        data_tests: [not_null, unique]
+

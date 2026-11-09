@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_psc_events
+    description: "Typed PSC event stream; one row per raw delivery."
+    columns:
+      - name: psc_id
+        data_tests: [not_null]
+      - name: event_timepoint
+        data_tests: [not_null]
+      - name: company_number
+        data_tests: [not_null]
+
+  - name: dim_psc_history
+    description: "All observed PSC record versions from initial snapshot onwards."
+    columns:
+      - name: psc_version_id
+        data_tests: [not_null, unique]
+      - name: psc_id
+        data_tests: [not_null]
+      - name: valid_from_timepoint
+        data_tests: [not_null]
+
+  - name: mart_active_pscs
+    description: "Currently reported PSC records for subsequent corporate analysis."
+    columns:
+      - name: psc_id
+        data_tests: [not_null, unique]
+
