@@ -1,6 +1,6 @@
 # UK Corporate Intelligence — National ingest and dbt model pack
 
-This extension of Phase 1 uses the **official PSC bulk snapshot** and the **Companies House streaming API**, then stages the investigation-relevant read-only domains in dbt on Databricks.
+This project uses the **official PSC bulk snapshot** and the **Companies House streaming API**, then stages the investigation-relevant read-only domains in dbt on Databricks.
 
 ## What is implemented
 
