@@ -8,8 +8,8 @@ This project uses the **official PSC bulk snapshot** and the **Companies House s
 |---|---|---|
 | PSC nationwide baseline | Split ZIP snapshot | `stg_psc_bulk`, `int_psc_daily_deltas`, `dim_psc_history_bulk` |
 | PSC changes | PSC stream | `stg_ch_psc_stream`; optional verified replay model |
-| Company profiles | `companies` stream | `stg_ch_companies`, `dim_ch_companies` |
-| Officers/appointments | `officers` stream | `stg_ch_officer_appointments` |
+| Company profiles | `companies` stream | `stg_ch_companies`, `dim_ch_companies`; history in `stg_ch_company_events`, `dim_ch_company_history` |
+| Officers/appointments | `officers` stream | `stg_ch_officer_appointments`; history in `stg_ch_officer_appointment_events`, `dim_ch_officer_appointment_history` |
 | Charges | `charges` stream | `stg_ch_charges` |
 | Filing history | `filings` stream | `stg_ch_filings` |
 | Insolvency cases | `insolvency` stream | `stg_ch_insolvency`, `fct_ch_insolvency_cases` |

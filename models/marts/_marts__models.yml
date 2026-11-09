@@ -30,6 +30,34 @@ models:
       - name: company_number
         data_tests: [not_null, unique]
 
+  - name: dim_ch_company_history
+    description: >
+      SCD2 history of company profiles, with a new version each time a
+      company's record changes on the companies stream (name, status,
+      registered office and so on). Deletions are kept as their own version.
+      History only goes back to when stream capture started.
+    columns:
+      - name: company_version_id
+        data_tests: [not_null, unique]
+      - name: company_number
+        data_tests: [not_null]
+      - name: valid_from_timepoint
+        data_tests: [not_null]
+
+  - name: dim_ch_officer_appointment_history
+    description: >
+      SCD2 history of officer appointments, with a new version each time an
+      appointment changes on the officers stream, such as a resignation or a
+      change of role. Deletions are kept as their own version, and history only
+      goes back to when stream capture started.
+    columns:
+      - name: appointment_version_id
+        data_tests: [not_null, unique]
+      - name: appointment_uri
+        data_tests: [not_null]
+      - name: valid_from_timepoint
+        data_tests: [not_null]
+
   - name: fct_ch_insolvency_cases
     description: >
       One row per insolvency case, from splitting out the cases array in

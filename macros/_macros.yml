@@ -1,0 +1,14 @@
+version: 2
+
+macros:
+  - name: ch_company_columns
+    description: >
+      Parses a companies stream payload into company profile columns. Shared by
+      stg_ch_companies and stg_ch_company_events so the current and history
+      models always expose the same fields.
+
+  - name: ch_officer_appointment_columns
+    description: >
+      Parses an officers stream payload into appointment columns. Shared by
+      stg_ch_officer_appointments and stg_ch_officer_appointment_events so the
+      current and history models always expose the same fields.

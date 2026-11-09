@@ -84,6 +84,20 @@ models:
       files when it has no PSC or can't identify one. Nothing downstream uses
       it yet.
 
+  - name: stg_ch_company_events
+    description: >
+      Every event from the companies stream, including deletions, with the same
+      parsed columns as stg_ch_companies. It reads base_ch_stream_events rather
+      than the latest records so earlier versions are kept, and feeds
+      dim_ch_company_history.
+
+  - name: stg_ch_officer_appointment_events
+    description: >
+      Every event from the officers stream, including deletions, with the same
+      parsed columns as stg_ch_officer_appointments. It reads
+      base_ch_stream_events so earlier versions are kept, and feeds
+      dim_ch_officer_appointment_history.
+
   - name: stg_ch_psc_stream
     description: >
       Every PSC change event from the psc stream, read from base_ch_stream_events
