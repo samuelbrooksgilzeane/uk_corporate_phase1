@@ -1,8 +1,6 @@
 version: 2
 
 models:
-  # Streaming API
-
   - name: stg_ch_stream_events
     description: >
       Raw events from all nine Companies House streams, deduplicated so each
@@ -17,13 +15,6 @@ models:
         data_tests: [not_null]
       - name: event_timepoint
         data_tests: [not_null]
-
-  - name: int_ch_latest_records
-    description: >
-      Current state of each resource on the streams, taking the latest event
-      per resource and dropping anything whose latest event is a deletion.
-      Most of the stg_ch_ models read from here. It only covers resources that
-      have changed since capture started.
 
   - name: stg_ch_companies
     description: >
@@ -80,8 +71,6 @@ models:
       so earlier versions are kept. It stays separate from the bulk PSC history
       until the snapshot and stream cutover has been checked.
 
-  # PSC bulk snapshots
-
   - name: stg_psc_bulk
     description: >
       PSC records from the daily bulk snapshot, one row per PSC per snapshot
@@ -93,74 +82,3 @@ models:
         data_tests: [not_null]
       - name: company_number
         data_tests: [not_null]
-
-  - name: int_psc_daily_deltas
-    description: >
-      Compares each complete PSC snapshot with the one before it and keeps only
-      records that appeared, changed or went missing. It's incremental, so a
-      late or corrected older snapshot needs a full refresh.
-      dim_psc_history_bulk is built from this.
-    columns:
-      - name: psc_change_id
-        data_tests: [not_null, unique]
-      - name: snapshot_date
-        data_tests: [not_null]
-
-  - name: dim_psc_history_bulk
-    description: >
-      SCD2 history of PSC records built from int_psc_daily_deltas, with each
-      version valid between the snapshot dates it was seen. The dates are when
-      we observed a change, not when it legally happened. Used by
-      bridge_ch_company_parties and mart_psc_changes_30d.
-    columns:
-      - name: psc_version_id
-        data_tests: [not_null, unique]
-      - name: company_number
-        data_tests: [not_null]
-
-  - name: dim_psc_history_verified
-    description: >
-      PSC history that adds psc stream events on top of a bulk snapshot
-      baseline, so changes are captured as they happen instead of once a day.
-      It's disabled until enable_psc_stream_union is set along with
-      psc_baseline_date and a verified psc_stream_cutover_timepoint (see
-      NATIONAL_PLATFORM.md).
-
-  # Marts
-
-  - name: dim_ch_companies
-    description: >
-      One row per company, built from stg_ch_companies and used as the company
-      lookup in the marts. It only covers companies seen on the companies
-      stream since capture started.
-    columns:
-      - name: company_number
-        data_tests: [not_null, unique]
-
-  - name: fct_ch_insolvency_cases
-    description: >
-      One row per insolvency case, from splitting out the cases array in
-      stg_ch_insolvency. Feeds the insolvency counts in mart_ch_company_activity.
-
-  - name: bridge_ch_company_parties
-    description: >
-      Links companies to their PSCs (from the latest bulk snapshot) and their
-      officers (from the officers stream). Each row is a source record rather
-      than a matched person, so the same person at two companies appears as two
-      unrelated rows. Feeds mart_ch_company_activity.
-
-  - name: mart_ch_company_activity
-    description: >
-      One row per company with counts of active PSCs, active officers, charges,
-      filings and insolvency cases. Apart from PSCs, the counts only cover
-      activity since stream capture started, so a zero doesn't mean none. It's
-      meant for picking which companies to look at, not as a risk score.
-    columns:
-      - name: company_number
-        data_tests: [not_null, unique]
-
-  - name: mart_psc_changes_30d
-    description: >
-      Number of PSC changes per company seen in the bulk snapshots over the last
-      30 days. Each PSC's first version isn't counted, so a PSC that newly
-      appears in the window doesn't count as a change.

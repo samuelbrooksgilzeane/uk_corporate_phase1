@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: int_ch_latest_records
+    description: >
+      Current state of each resource on the streams, taking the latest event
+      per resource and dropping anything whose latest event is a deletion.
+      Most of the stg_ch_ models read from here. It only covers resources that
+      have changed since capture started.
+
+  - name: int_psc_daily_deltas
+    description: >
+      Compares each complete PSC snapshot with the one before it and keeps only
+      records that appeared, changed or went missing. It's incremental, so a
+      late or corrected older snapshot needs a full refresh.
+      dim_psc_history_bulk is built from this.
+    columns:
+      - name: psc_change_id
+        data_tests: [not_null, unique]
+      - name: snapshot_date
+        data_tests: [not_null]
