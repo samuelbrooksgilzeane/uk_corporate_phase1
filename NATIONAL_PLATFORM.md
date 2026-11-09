@@ -66,7 +66,7 @@ python ingestion/capture_ch_stream.py --stream psc
 ```
 
 It writes `bronze.ch_stream_events` and `bronze.ch_stream_checkpoints`.
-The checkpoint is advanced only after the preceding batch was durably written. Replayed batches are deduplicated by `stg_ch_stream_events`.
+The checkpoint is advanced only after the preceding batch was durably written. Replayed batches are deduplicated by `base_ch_stream_events`.
 
 ### Critical integrity gate: matching snapshot and stream
 

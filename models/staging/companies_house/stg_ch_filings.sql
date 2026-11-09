@@ -10,6 +10,6 @@ select
     get_json_object(data_json, '$.description') as filing_description_code,
     get_json_object(data_json, '$.links.document_metadata') as document_uri,
     published_at as latest_event_at
-from {{ ref('int_ch_latest_records') }}
+from {{ ref('base_ch_latest_records') }}
 where stream_name = 'filings'
 

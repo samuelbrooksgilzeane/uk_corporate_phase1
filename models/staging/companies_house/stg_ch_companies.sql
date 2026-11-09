@@ -16,6 +16,6 @@ select
     get_json_object(data_json, '$.previous_company_names') as previous_names_json,
     resource_uri,
     published_at as latest_event_at
-from {{ ref('int_ch_latest_records') }}
+from {{ ref('base_ch_latest_records') }}
 where stream_name = 'companies'
 

@@ -7,6 +7,6 @@ select
     to_date(get_json_object(data_json, '$.notified_on')) as notified_on,
     to_date(get_json_object(data_json, '$.ceased_on')) as ceased_on,
     published_at as latest_event_at
-from {{ ref('int_ch_latest_records') }}
+from {{ ref('base_ch_latest_records') }}
 where stream_name = 'psc_statements'
 

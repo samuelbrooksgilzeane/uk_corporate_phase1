@@ -10,6 +10,6 @@ select
     to_date(get_json_object(data_json, '$.satisfied_on')) as satisfied_on,
     get_json_object(data_json, '$.persons_entitled') as persons_entitled_json,
     published_at as latest_event_at
-from {{ ref('int_ch_latest_records') }}
+from {{ ref('base_ch_latest_records') }}
 where stream_name = 'charges'
 
