@@ -67,7 +67,8 @@ with dates_to_process as (
         p.notified_on,
         p.ceased_on,
         p.source_etag,
-        sha2('missing_from_complete_snapshot', 256) as payload_fingerprint,
+        -- No payload: the record wasn't in this snapshot.
+        cast(null as string) as payload_fingerprint,
         'missing' as observation_type,
         true as is_missing_from_snapshot
     from prior_records p
