@@ -26,14 +26,18 @@ models:
   - name: base_psc_bulk_snapshots
     description: >
       Raw rows from the PSC bulk snapshot table as loaded, before
-      deduplication. stg_psc_bulk joins it to the manifest so only complete
-      snapshots come through.
+      deduplication. stg_psc_bulk joins it to base_psc_bulk_complete_snapshots
+      so only complete snapshots come through.
 
-  - name: base_psc_bulk_manifest
+  - name: base_psc_bulk_complete_snapshots
     description: >
-      One row per bulk snapshot date, recording how many archive parts were
-      expected and loaded and whether the snapshot is complete. stg_psc_bulk
-      and int_psc_daily_deltas use it to ignore incomplete snapshots.
+      One row per bulk snapshot whose ZIP parts were all loaded, with the
+      previous complete snapshot date alongside it. This is the only place
+      that decides which snapshots count; stg_psc_bulk and int_psc_daily_deltas
+      both read from it.
+    columns:
+      - name: snapshot_date
+        data_tests: [not_null, unique]
 
   - name: stg_ch_companies
     description: >

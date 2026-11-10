@@ -1,12 +1,7 @@
 {{ config(materialized='view') }}
 
 -- Only publish dates whose full set of ZIP parts was committed.
-with complete_dates as (
-    select snapshot_date
-    from {{ ref('base_psc_bulk_manifest') }}
-    where is_complete = true
-),
-raw as (
+with raw as (
     select
         b.*,
         row_number() over (
@@ -14,7 +9,7 @@ raw as (
             order by b.loaded_at desc, b.part_number desc
         ) as duplicate_rank
     from {{ ref('base_psc_bulk_snapshots') }} b
-    inner join complete_dates d
+    inner join {{ ref('base_psc_bulk_complete_snapshots') }} d
         on b.snapshot_date = d.snapshot_date
     where b.psc_uri is not null
 )

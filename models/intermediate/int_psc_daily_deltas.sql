@@ -7,22 +7,16 @@
 
 -- For each newly completed snapshot date, compare it to the PREVIOUS complete
 -- snapshot date. A missing record is flagged, not assumed legally deleted.
-with dates as (
-    select
-        snapshot_date,
-        lag(snapshot_date) over (order by snapshot_date) as previous_date
-    from {{ ref('base_psc_bulk_manifest') }}
-    where is_complete = true
-), dates_to_process as (
-    select *
-    from dates
+with dates_to_process as (
+    select snapshot_date, previous_snapshot_date
+    from {{ ref('base_psc_bulk_complete_snapshots') }}
     {% if is_incremental() %}
     where snapshot_date > (
         select coalesce(max(snapshot_date), date('1900-01-01')) from {{ this }}
     )
     {% endif %}
 ), current_records as (
-    select p.*
+    select p.*, d.previous_snapshot_date
     from {{ ref('stg_psc_bulk') }} p
     inner join dates_to_process d on p.snapshot_date = d.snapshot_date
 ), prior_records as (
@@ -30,7 +24,7 @@ with dates as (
         d.snapshot_date as comparison_date,
         p.*
     from {{ ref('stg_psc_bulk') }} p
-    inner join dates_to_process d on p.snapshot_date = d.previous_date
+    inner join dates_to_process d on p.snapshot_date = d.previous_snapshot_date
 ), changed as (
     select
         c.snapshot_date,
@@ -48,20 +42,19 @@ with dates as (
         c.source_etag,
         c.payload_fingerprint,
         case
-            when d.previous_date is null then 'baseline'
+            when c.previous_snapshot_date is null then 'baseline'
             when p.psc_id is null then 'appeared'
             else 'changed'
         end as observation_type,
         false as is_missing_from_snapshot
     from current_records c
-    inner join dates_to_process d on c.snapshot_date = d.snapshot_date
     left join prior_records p
         on c.psc_id = p.psc_id and c.snapshot_date = p.comparison_date
     where p.psc_id is null
        or not (c.payload_fingerprint <=> p.payload_fingerprint)
 ), missing as (
     select
-        d.snapshot_date,
+        p.comparison_date as snapshot_date,
         p.psc_id,
         p.company_number,
         p.psc_name,
@@ -78,7 +71,6 @@ with dates as (
         'missing' as observation_type,
         true as is_missing_from_snapshot
     from prior_records p
-    inner join dates_to_process d on p.comparison_date = d.snapshot_date
     left join current_records c
         on p.psc_id = c.psc_id and p.comparison_date = c.snapshot_date
     where c.psc_id is null
